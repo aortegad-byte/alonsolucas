@@ -89,6 +89,7 @@ def construir_panel(xlsx, fin=FIN_DESARROLLO, hasta=None):
     # insumos del carry proxy (niveles en % anual, información de t) y días hasta la próxima jornada
     panel["x_fedl01"] = lleno["FEDL01 Index|PX_LAST"]
     panel["x_chni1m"] = lleno["CHNI1M Curncy|PX_LAST"]
+    panel["x_vol1m"] = lleno["USDCLPV1M Curncy|PX_LAST"]         # nivel, para el filtro de volatilidad del ±3
     panel["dias_next"] = pd.Series(panel.index, index=panel.index).diff().shift(-1).dt.days
 
     panel = panel.loc[INICIO:fin]
