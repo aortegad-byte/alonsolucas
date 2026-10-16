@@ -222,6 +222,27 @@ Script: `04_senal_diaria.py`. Aplica el modelo de §8 con las mismas funciones d
 - **Si una serie del núcleo no tiene dato** dentro del relleno de 5 días, el script se detiene en vez de emitir una señal con datos rancios.
 - Para extender el panel hasta la última jornada, `construir_panel` de `02_seleccion_variables.py` recibe ahora `fin` y `hasta` opcionales; con los valores por defecto el resultado de 02 y 03 no cambia.
 
+### 8.2 Prueba de ±3 con señal clara (16 oct 2026) [Descartada: se mantiene ±1]
+
+Script: `05_prueba_tres.py`; resultados en `resultados/prueba_tres.xlsx`. Las reglas y el criterio de elección se fijaron y se registraron en git (commit `e522232`) antes de correr.
+
+- **Principio:** el ±3 solo amplifica una posición ±1 del modelo congelado en la misma dirección.
+- **Reglas anidadas:** A acuerdo (percentil de M1 y de M2 ≥ 0,90, o ≤ 0,10); B + probabilidad calibrada a ≥ 0,068 de 0,5 (percentil 80 en selección); C + persistencia (acuerdo también el día anterior); D + vol. implícita 1M fuera del 20 % más alto del último año.
+- **Criterio (selección 2012–2017, 2 pb):** ≥ 30 días en ±3, acierto ≥ 3 puntos sobre los días ±1, mayor resultado por unidad y mayor Sharpe que el modelo congelado.
+
+| Regla | Días ±3 | Acierto ±3 / ±1 | Resultado por unidad ±3 / ±1 (pb) | Sharpe con ±3 / congelado |
+|---|---|---|---|---|
+| A acuerdo | 136 | 56,6 % / 54,5 % | 9,8 / 10,6 | 1,24 / 1,44 |
+| B + probabilidad | 87 | 56,3 % / 54,7 % | 8,5 / 10,7 | 1,19 / 1,44 |
+| C + persistencia | 2 | — | — | 1,42 / 1,44 |
+| D + volatilidad | 2 | — | — | 1,42 / 1,44 |
+
+Lectura:
+- **Ninguna regla califica**, así que la validación no se miró y el modelo congelado no cambia.
+- Los días de acuerdo aciertan algo más, pero **no ganan más por unidad** que los días ±1 y bajan el Sharpe: triplicar la exposición suma más riesgo y rotación que retorno.
+- **La persistencia casi nunca se da:** el percentil de M1 tiene autocorrelación −0,17 (la señal viene de movimientos del día anterior que en parte se revierten).
+- **Pruebas acumuladas:** 4 reglas de ±3 evaluadas en selección; ninguna prueba nueva en validación.
+
 ## 9. Pendientes
 
 - Respuestas de la mentoría (§10 del resumen): retorno, carry, costos, período fuera de muestra, datos en vivo, rezagos de publicación.
