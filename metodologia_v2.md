@@ -216,7 +216,7 @@ Desde aquí no se cambian ni las variables, ni el modelo, ni la regla de exposic
 ## 9. Pendientes
 
 - Respuestas de la mentoría (§10 del resumen): retorno, carry, costos, período fuera de muestra, datos en vivo, rezagos de publicación.
-- Agregar a `01_panel.py` el chequeo de lunes (§3.3).
+- ~~Agregar a `01_panel.py` el chequeo de lunes (§3.3).~~ Hecho (16 oct 2026): `prueba_lunes_ok` exige que tanto las jornadas como las jornadas con retorno sean lunes en 17–23 %. Da 20,1 % en las tres variantes; si el retorno se calcula sobre el calendario continuo, los lunes con retorno caen a 0 % y la prueba falla.
 - **Costo de transacción del kit:** es lo que hoy decide qué estrategia elegir (§7).
 - Reducir la rotación sin abrir muchas pruebas nuevas.
 - Congelar el modelo y el diseño, y evaluar **una sola vez** en el tramo fuera de muestra (desde 2024-10-01).

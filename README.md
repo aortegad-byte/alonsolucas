@@ -16,6 +16,7 @@ Predicción de la dirección del USD/CLP del día siguiente y su traducción a u
 | `metodologia_v2.md` | Metodología vigente, resultados y modelo congelado (§8) |
 | `Resumen_tecnico_desafio_USDCLP.pdf` | Resumen técnico de la etapa 1 (10 oct 2026) |
 | `Tabla Comparativa Variables Núcleo USD CLP.pdf` | Tabla anterior; reemplazada (ver metodología §2) |
+| `01_panel.py` | Panel limpio, objetivo, chequeos (look-ahead y lunes) y referencias provisionales (etapa 1) |
 | `02_seleccion_variables.py` | Panel y selección de variables (etapa 2a) |
 | `03_modelos_decision.py` | Modelos, calibración y capa de decisión (etapa 2b) |
 | `resultados/` | Salidas de ambos scripts |
@@ -26,6 +27,7 @@ La base de Bloomberg (`base_usdclp (2).xlsx`) no se incluye en el repositorio. C
 
 ```
 pip install -r requirements.txt
+python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante core
 python 02_seleccion_variables.py "base_usdclp (2).xlsx"
 python 03_modelos_decision.py "base_usdclp (2).xlsx"
 ```
