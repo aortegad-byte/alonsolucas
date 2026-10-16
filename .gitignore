@@ -1,0 +1,14 @@
+# entorno
+.venv/
+.idea/
+__pycache__/
+*.pyc
+
+# datos de Bloomberg y documentos de terceros: no se publican en un repositorio público
+*.xlsx
+!resultados/*.xlsx
+Bases.pdf
+Explorando-los-*.pdf
+
+# plantilla de PyCharm
+main.py
