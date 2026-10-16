@@ -63,8 +63,12 @@ AUXILIARES = {"d_ust10y": ("USGG10YR Index|PX_LAST", "d")}
 REZAGO_PUBLICACION = {"FEDL01 Index|PX_LAST"}
 
 
-def construir_panel(xlsx):
+def construir_panel(xlsx, fin=FIN_DESARROLLO, hasta=None):
+    """fin=None conserva hasta la última jornada, cuyo objetivo queda vacío (señal del día).
+    hasta trunca la base en esa fecha, como si fuera la última disponible."""
     datos = pd.read_excel(xlsx, sheet_name="datos").set_index("fecha").sort_index()
+    if hasta is not None:
+        datos = datos.loc[:hasta]
     datos = datos.asfreq("D")                                   # calendario continuo
     jornada = datos["USDCLP Curncy|PX_LAST"].notna()            # el objetivo no se rellena
     lleno = datos.ffill(limit=5)                                # relleno sobre el calendario completo
@@ -87,7 +91,9 @@ def construir_panel(xlsx):
     panel["x_chni1m"] = lleno["CHNI1M Curncy|PX_LAST"]
     panel["dias_next"] = pd.Series(panel.index, index=panel.index).diff().shift(-1).dt.days
 
-    panel = panel.loc[INICIO:FIN_DESARROLLO].iloc[:-1]          # ret_next no puede cruzar el corte
+    panel = panel.loc[INICIO:fin]
+    if fin is not None:
+        panel = panel.iloc[:-1]                                 # ret_next no puede cruzar el corte
     lunes = (panel.index.dayofweek == 0).mean()
     assert 0.17 < lunes < 0.23, f"proporción de lunes anómala: {lunes:.3f}"
     assert panel.index.is_unique and panel.index.is_monotonic_increasing

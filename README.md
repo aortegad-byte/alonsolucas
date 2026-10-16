@@ -19,7 +19,8 @@ Predicción de la dirección del USD/CLP del día siguiente y su traducción a u
 | `01_panel.py` | Panel limpio, objetivo, chequeos (look-ahead y lunes) y referencias provisionales (etapa 1) |
 | `02_seleccion_variables.py` | Panel y selección de variables (etapa 2a) |
 | `03_modelos_decision.py` | Modelos, calibración y capa de decisión (etapa 2b) |
-| `resultados/` | Salidas de ambos scripts |
+| `04_senal_diaria.py` | Señal del día con el modelo congelado: dirección, probabilidad y posición (entregable 1) |
+| `resultados/` | Salidas de los scripts |
 
 ## Uso
 
@@ -30,4 +31,7 @@ pip install -r requirements.txt
 python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante core
 python 02_seleccion_variables.py "base_usdclp (2).xlsx"
 python 03_modelos_decision.py "base_usdclp (2).xlsx"
+python 04_senal_diaria.py "base_usdclp (2).xlsx"
 ```
+
+`04_senal_diaria.py` imprime la decisión al cierre de la última jornada de la base y la guarda en `resultados/senal_del_dia.json`. Con `--hasta AAAA-MM-DD` calcula la señal como si la base terminara ese día.

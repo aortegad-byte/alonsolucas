@@ -213,6 +213,15 @@ Desde aquí no se cambian ni las variables, ni el modelo, ni la regla de exposic
 | Niveles | Solo −1, 0 y +1 (sin ±3) |
 | Implementación | `03_modelos_decision.py`, estrategia `M1_ridge\|DH_histeresis_q0.2` |
 
+### 8.1 Señal del día (16 oct 2026) [Implementado]
+
+Script: `04_senal_diaria.py`. Aplica el modelo de §8 con las mismas funciones de `03_modelos_decision.py` y entrega, para la última jornada de la base: dirección (probabilidad calibrada > 0,5 = alza), probabilidad calibrada y cruda, percentil de 63 predicciones y posición. No calcula retornos, así que no evalúa el tramo fuera de muestra.
+
+- **Dirección y posición pueden diferir:** la dirección usa la probabilidad calibrada; la posición, su percentil frente a las últimas 63 predicciones.
+- **Verificación:** en las 5.949 jornadas de desarrollo reproduce exactamente `M1_ridge|DH_histeresis_q0.2` de `senales_desarrollo.csv`. Truncando la base en cinco fechas (2012–2026), la señal de cada fecha es idéntica a la calculada con la base completa (sin look-ahead).
+- **Si una serie del núcleo no tiene dato** dentro del relleno de 5 días, el script se detiene en vez de emitir una señal con datos rancios.
+- Para extender el panel hasta la última jornada, `construir_panel` de `02_seleccion_variables.py` recibe ahora `fin` y `hasta` opcionales; con los valores por defecto el resultado de 02 y 03 no cambia.
+
 ## 9. Pendientes
 
 - Respuestas de la mentoría (§10 del resumen): retorno, carry, costos, período fuera de muestra, datos en vivo, rezagos de publicación.
