@@ -6,8 +6,10 @@ Predicción de la dirección del USD/CLP del día siguiente y su traducción a u
 
 - Núcleo de variables congelado (13 series, cobre HG1).
 - Modelo congelado: logística Ridge calibrada con Platt y banda con histéresis, solo ±1.
+- Señal del día automatizada (`04_senal_diaria.py`).
+- ±3 probado con reglas fijadas de antemano y descartado (metodología §8.2).
 - El tramo fuera de muestra (desde 2024-10-01) todavía no se ha evaluado.
-- La especificación y todas las decisiones están en [`metodologia_v2.md`](metodologia_v2.md).
+- La especificación y todas las decisiones están en [`metodologia_v2.md`](metodologia_v2.md). **Los pendientes para la próxima sesión están en su §9.**
 
 ## Archivos
 

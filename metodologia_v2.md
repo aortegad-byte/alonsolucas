@@ -243,10 +243,30 @@ Lectura:
 - **La persistencia casi nunca se da:** el percentil de M1 tiene autocorrelación −0,17 (la señal viene de movimientos del día anterior que en parte se revierten).
 - **Pruebas acumuladas:** 4 reglas de ±3 evaluadas en selección; ninguna prueba nueva en validación.
 
-## 9. Pendientes
+## 9. Pendientes (actualizado al cierre de la sesión del 16 oct 2026)
 
+**Hecho en la sesión del 16 oct 2026**
+- `01_panel.py` en el repo, con prueba de lunes (§3.3): `prueba_lunes_ok` exige que tanto las jornadas como las jornadas con retorno sean lunes en 17–23 %. Da 20,1 % en las tres variantes; si el retorno se calcula sobre el calendario continuo, los lunes con retorno caen a 0 % y la prueba falla. Nota: `01_panel.py` todavía usa el cobre LME (LMCADS03); los scripts 02 a 05 arman su propio panel con HG1, así que no afecta al modelo congelado.
+- Etapa C (§5) reproducida con HG1: el script 02 da resultados idénticos a los guardados.
+- Señal del día (§8.1, `04_senal_diaria.py`), verificada contra el script 03 y sin look-ahead.
+- Prueba de ±3 con señal clara (§8.2, `05_prueba_tres.py`): descartada, se mantiene ±1.
+
+**Decisiones abiertas**
+1. **Dirección que reporta la señal del día.** Hoy sale de la probabilidad calibrada (> 0,5 = alza), mientras que la posición sale del percentil, y pueden contradecirse (ejemplo: probabilidad 0,49 con posición +1). Alternativa: reportar como dirección el signo de la posición y "sin señal" cuando es 0.
+2. **Alinear `01_panel.py` con HG1**, o declararlo solo como panel de la etapa 1.
+
+**Trabajo siguiente**
+- **Lectura de la convicción (entregable 3):** jornadas de máxima exposición y de abstención.
+- **Curva de resultado (entregable 2)** frente a comprar siempre, no operar nunca y operar siempre con exposición uno; espera el código de evaluación del kit.
+- **Reducir la rotación** sin abrir muchas pruebas nuevas (hoy ~149 veces el nominal al año con M1·DH).
+- **Monitoreo en vivo (13 nov–1 dic):** usar `04_senal_diaria.py` con la base actualizada cada día; definir cómo llegan los datos nuevos.
+
+**Depende del kit o de la mentoría**
 - Respuestas de la mentoría (§10 del resumen): retorno, carry, costos, período fuera de muestra, datos en vivo, rezagos de publicación.
-- ~~Agregar a `01_panel.py` el chequeo de lunes (§3.3).~~ Hecho (16 oct 2026): `prueba_lunes_ok` exige que tanto las jornadas como las jornadas con retorno sean lunes en 17–23 %. Da 20,1 % en las tres variantes; si el retorno se calcula sobre el calendario continuo, los lunes con retorno caen a 0 % y la prueba falla.
 - **Costo de transacción del kit:** es lo que hoy decide qué estrategia elegir (§7).
-- Reducir la rotación sin abrir muchas pruebas nuevas.
-- Congelar el modelo y el diseño, y evaluar **una sola vez** en el tramo fuera de muestra (desde 2024-10-01).
+- Evaluar **una sola vez** en el tramo fuera de muestra (desde 2024-10-01), después de conocer costo y carry.
+
+**Para retomar el entorno**
+- Crear el entorno: `python -m venv .venv` y `.venv\Scripts\pip install -r requirements.txt`.
+- Copiar `base_usdclp (2).xlsx` a la raíz (no se publica).
+- Las salidas de prueba conviene generarlas fuera del repo, porque los scripts escriben en `resultados/` del directorio actual.
