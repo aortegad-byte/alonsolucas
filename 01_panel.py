@@ -36,10 +36,10 @@ IMPORTANTE - supuestos provisionales (reemplazar con el kit del laboratorio)
 
 Uso
 ---
-    python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante core --salida data/
-    python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante swaps2003
-    python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante full2010
-    python 01_panel.py --xlsx "base_usdclp (2).xlsx" --carry ndf
+    python 01_panel.py --xlsx "base_usdclp_actualizada.xlsx" --variante core --salida data/
+    python 01_panel.py --xlsx "base_usdclp_actualizada.xlsx" --variante swaps2003
+    python 01_panel.py --xlsx "base_usdclp_actualizada.xlsx" --variante full2010
+    python 01_panel.py --xlsx "base_usdclp_actualizada.xlsx" --carry ndf
 
 Salidas (carpeta --salida): panel_<variante>.csv, referencias_<variante>.csv,
 chequeos_<variante>.json

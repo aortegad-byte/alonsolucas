@@ -7,7 +7,7 @@ Implementa el protocolo de metodologia_v2.md (§3 y §5):
   - Etapa C: walk-forward, logística Ridge núcleo vs núcleo + candidata; Clark-West y DM.
   - Benjamini-Hochberg al 10 % sobre los p de Clark-West de la etapa C.
 
-Uso: python 02_seleccion_variables.py "base_usdclp (2).xlsx"
+Uso: python 02_seleccion_variables.py "base_usdclp_actualizada.xlsx"
 """
 import sys
 from pathlib import Path
@@ -269,4 +269,4 @@ def main(xlsx):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "base_usdclp (2).xlsx")
+    main(sys.argv[1] if len(sys.argv) > 1 else "base_usdclp_actualizada.xlsx")

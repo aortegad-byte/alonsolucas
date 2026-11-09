@@ -10,7 +10,7 @@ Núcleo congelado (metodologia_v2 §6.1, cobre HG1). Todo dentro del tramo de de
   Selección     2012-2017: ancho de banda q y activación de ±3.  Validación: 2018 a sep 2024.
   Significancia DM sobre log-loss vs M0; bootstrap estacionario vs referencias; Benjamini-Hochberg.
 
-Uso: python 03_modelos_decision.py "base_usdclp (2).xlsx"
+Uso: python 03_modelos_decision.py "base_usdclp_actualizada.xlsx"
 """
 import importlib
 import sys
@@ -326,4 +326,4 @@ def main(xlsx):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "base_usdclp (2).xlsx")
+    main(sys.argv[1] if len(sys.argv) > 1 else "base_usdclp_actualizada.xlsx")

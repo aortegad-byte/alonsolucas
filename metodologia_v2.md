@@ -286,5 +286,5 @@ El proxy de carry pasa de FEDL01 rezagada − CHNI1M (NDF 1M) a **FEDL01 rezagad
 
 **Para retomar el entorno**
 - Crear el entorno: `python -m venv .venv` y `.venv\Scripts\pip install -r requirements.txt`.
-- Copiar `base_usdclp (2).xlsx` a la raíz (no se publica).
+- Copiar `base_usdclp_actualizada.xlsx` a la raíz (no se publica).
 - Las salidas de prueba conviene generarlas fuera del repo, porque los scripts escriben en `resultados/` del directorio actual.

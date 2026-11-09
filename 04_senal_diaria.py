@@ -14,8 +14,8 @@ Dirección y posición pueden no coincidir. La dirección sale de la probabilida
 predicciones. Una probabilidad de 0,49 puede ser alta comparada con las semanas anteriores.
 
 Uso:
-  python 04_senal_diaria.py "base_usdclp (2).xlsx"
-  python 04_senal_diaria.py "base_usdclp (2).xlsx" --hasta 2024-09-27   # como si la base terminara ese día
+  python 04_senal_diaria.py "base_usdclp_actualizada.xlsx"
+  python 04_senal_diaria.py "base_usdclp_actualizada.xlsx" --hasta 2024-09-27   # como si la base terminara ese día
 """
 import argparse
 import importlib
@@ -67,7 +67,7 @@ def senal_del_dia(pred):
 
 def main():
     ap = argparse.ArgumentParser(description="Señal del día del modelo congelado")
-    ap.add_argument("xlsx", nargs="?", default="base_usdclp (2).xlsx")
+    ap.add_argument("xlsx", nargs="?", default="base_usdclp_actualizada.xlsx")
     ap.add_argument("--hasta", help="trunca la base en esta fecha (AAAA-MM-DD)")
     a = ap.parse_args()
 

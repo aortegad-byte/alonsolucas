@@ -32,7 +32,7 @@ contra las tres referencias, con Benjamini-Hochberg sobre esas 4 pruebas.
 Advertencia: la validación ya se miró en la etapa 2b (incluida la convicción del D3), así que
 no es una muestra virgen. Se declara en el informe.
 
-Uso: python 05_prueba_tres.py "base_usdclp (2).xlsx"
+Uso: python 05_prueba_tres.py "base_usdclp_actualizada.xlsx"
 """
 import importlib
 import sys
@@ -167,4 +167,4 @@ def main(xlsx):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "base_usdclp (2).xlsx")
+    main(sys.argv[1] if len(sys.argv) > 1 else "base_usdclp_actualizada.xlsx")
