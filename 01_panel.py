@@ -24,8 +24,11 @@ Que hace
 IMPORTANTE - supuestos provisionales (reemplazar con el kit del laboratorio)
 ----------------------------------------------------------------------------
 * Retorno = cierre a cierre del USD/CLP (PX_LAST). Confirmar con el codigo de evaluacion.
-* Carry proxy = (FEDL01 rezagado - CHNI1M) / 100 * dias / 360 por unidad de exposicion.
-  El laboratorio entrega su propio carry; usar ese.
+* Carry (calcular_carry_diario): diferencial USD - CLP en % anual, que pnl_estrategia
+  convierte a resultado diario con / 100 * dias / 360 por unidad de exposicion.
+    --carry overnight (por defecto): FEDL01 rezagado - TPM (CHOVCHOV, desde 2001-08-09)
+    --carry ndf:                     FEDL01 rezagado - CHNI1M (proxy de mercado NDF 1M)
+  El laboratorio entrega su propio carry; cuando llegue, USAR_CARRY_OFICIAL_KIT = True.
 * Costos: COSTO_BPS = 0 por defecto (el kit define los costos reales).
 * Periodo fuera de muestra: OOS_INICIO es un valor de trabajo, no el del laboratorio.
 * Las "tres referencias" del torneo no estan definidas sin ambiguedad en las bases;
@@ -36,6 +39,7 @@ Uso
     python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante core --salida data/
     python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante swaps2003
     python 01_panel.py --xlsx "base_usdclp (2).xlsx" --variante full2010
+    python 01_panel.py --xlsx "base_usdclp (2).xlsx" --carry ndf
 
 Salidas (carpeta --salida): panel_<variante>.csv, referencias_<variante>.csv,
 chequeos_<variante>.json
@@ -58,6 +62,11 @@ COSTO_BPS = 0.0           # por unidad de cambio de exposicion (placeholder)
 OOS_INICIO = "2024-10-01" # placeholder de trabajo
 DIAS_ANIO = 252
 LUNES_RANGO = (0.17, 0.23) # proporcion aceptable de lunes en el panel (metodologia_v2 §3.3)
+# carry: el kit del laboratorio trae el oficial; mientras no llegue, se usa un proxy
+USAR_CARRY_OFICIAL_KIT = False
+COLUMNA_CARRY_OFICIAL = None   # nombre de la columna del kit (debe venir en % anual USD - CLP)
+MODOS_CARRY = ("overnight", "ndf")
+TPM = "CHOVCHOV Index|PX_LAST"
 
 # alias, columna de la base, transformacion, grupo
 #   log      -> retorno logaritmico  r_<alias>
@@ -112,7 +121,25 @@ def cargar_raw(xlsx):
 
 
 # --------------------------------------------------------------------------- panel
-def construir_panel(raw, variante="core"):
+def calcular_carry_diario(raw, panel, usar_oficial=USAR_CARRY_OFICIAL_KIT, modo="overnight"):
+    """Diferencial USD - CLP en % anual para la exposicion decidida al cierre de t.
+    Un largo en USD gana la tasa USD y paga la CLP. pnl_estrategia lo lleva a resultado
+    diario (/ 100 * dias_next / 360). Solo usa informacion hasta t."""
+    if usar_oficial:
+        if COLUMNA_CARRY_OFICIAL is None or COLUMNA_CARRY_OFICIAL not in raw.columns:
+            raise KeyError(f"Columna de carry oficial no encontrada: {COLUMNA_CARRY_OFICIAL!r}")
+        return raw.loc[panel.index, COLUMNA_CARRY_OFICIAL]
+
+    if modo == "overnight":
+        # Diferencial estricto de tasas overnight de las bases (FEDL01 vs TPM/CHOVCHOV)
+        return panel["x_fedl01"] - panel["x_tpm"]
+    elif modo == "ndf":
+        # Proxy de mercado NDF a 1 mes
+        return panel["x_fedl01"] - panel["x_chni1m"]
+    raise ValueError(f"modo de carry desconocido: {modo!r} (opciones: {MODOS_CARRY})")
+
+
+def construir_panel(raw, variante="core", modo_carry="overnight"):
     """Solo mira hacia atras, salvo las columnas TARGET_COLS."""
     cfg = VARIANTES[variante]
     spec = [s for s in SPEC if s[3] in cfg["grupos"]]
@@ -145,8 +172,10 @@ def construir_panel(raw, variante="core"):
             out[f"x_{alias}"] = s
 
     # variables derivadas simples (estado), todas con informacion hasta t
-    if {"x_fedl01", "x_chni1m"} <= set(out.columns):
-        out["carry_usd_menos_clp"] = out["x_fedl01"] - out["x_chni1m"]   # % anual
+    if "x_tpm" not in out.columns:
+        # la TPM es insumo del carry overnight aunque la variante no la use como variable
+        out["x_tpm"] = raw[TPM].ffill(limit=FFILL_DIAS).loc[idx]
+    out["carry_usd_menos_clp"] = calcular_carry_diario(raw, out, modo=modo_carry)   # % anual
     if variante == "full2010":
         h = raw.loc[dias_mercado, "USDCLP Curncy|PX_HIGH"]
         l = raw.loc[dias_mercado, "USDCLP Curncy|PX_LOW"]
@@ -167,12 +196,12 @@ def construir_panel(raw, variante="core"):
 
 
 # --------------------------------------------------------------------------- chequeos
-def prueba_look_ahead(raw, variante, fraccion=0.75):
+def prueba_look_ahead(raw, variante, modo_carry="overnight", fraccion=0.75):
     """Reconstruye el panel con datos truncados y verifica que las columnas de
     informacion (todas menos el objetivo) no cambian: si cambiaran, usarian futuro."""
-    full = construir_panel(raw, variante)
+    full = construir_panel(raw, variante, modo_carry)
     corte = full.index[int(len(full) * fraccion)]
-    trunc = construir_panel(raw.loc[:corte], variante)
+    trunc = construir_panel(raw.loc[:corte], variante, modo_carry)
     feats = [c for c in full.columns if c not in TARGET_COLS]
     a = full.loc[:corte, feats]
     b = trunc.loc[:corte, feats]
@@ -181,9 +210,13 @@ def prueba_look_ahead(raw, variante, fraccion=0.75):
     return bool(ok), str(corte.date())
 
 
-def chequeos(raw, panel, variante):
+def chequeos(raw, panel, variante, modo_carry="overnight"):
     r = {}
     r["variante"] = variante
+    r["carry"] = "oficial_kit" if USAR_CARRY_OFICIAL_KIT else modo_carry
+    c = panel["carry_usd_menos_clp"]
+    r["carry_desde"] = str(c.first_valid_index().date()) if c.notna().any() else None
+    r["carry_mediana_pct_anual"] = round(float(c.median()), 4)
     r["filas"] = int(len(panel))
     r["desde"], r["hasta"] = str(panel.index.min().date()), str(panel.index.max().date())
     r["indice_unico_y_creciente"] = bool(panel.index.is_unique and panel.index.is_monotonic_increasing)
@@ -213,7 +246,7 @@ def chequeos(raw, panel, variante):
             if (fin - lv).days > STALE_DIAS:
                 stale[col] = str(lv.date())
     r["series_desactualizadas"] = stale
-    ok, corte = prueba_look_ahead(raw, variante)
+    ok, corte = prueba_look_ahead(raw, variante, modo_carry)
     r["prueba_look_ahead_ok"] = ok
     r["prueba_look_ahead_corte"] = corte
     return r
@@ -264,11 +297,13 @@ def main():
     ap.add_argument("--xlsx", required=True, help="ruta a base_usdclp.xlsx")
     ap.add_argument("--variante", default="core", choices=list(VARIANTES))
     ap.add_argument("--salida", default="data")
+    ap.add_argument("--carry", default="overnight", choices=MODOS_CARRY,
+                    help="proxy de carry mientras no llegue el del kit")
     a = ap.parse_args()
 
     raw = cargar_raw(a.xlsx)
-    panel = construir_panel(raw, a.variante)
-    chk = chequeos(raw, panel, a.variante)
+    panel = construir_panel(raw, a.variante, a.carry)
+    chk = chequeos(raw, panel, a.variante, a.carry)
     ref = referencias(panel)
 
     out = Path(a.salida)
@@ -278,7 +313,7 @@ def main():
     (out / f"chequeos_{a.variante}.json").write_text(json.dumps(chk, indent=2, ensure_ascii=False))
 
     print(json.dumps(chk, indent=2, ensure_ascii=False))
-    print("\nReferencias provisionales (por unidad de nominal, carry proxy, sin costos):")
+    print(f"\nReferencias provisionales (por unidad de nominal, carry {chk['carry']}, sin costos):")
     print(ref.to_string(index=False))
     if not chk["prueba_look_ahead_ok"]:
         sys.exit("ERROR: la prueba anti look-ahead fallo")

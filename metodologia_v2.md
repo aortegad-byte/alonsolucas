@@ -11,7 +11,7 @@ Este documento reemplaza o agrega a las secciones indicadas; lo no mencionado si
 | Aspecto | Antes | Ahora |
 |---|---|---|
 | Tres referencias | "+1, 0 y −1" (supuesto) | **Comprar siempre (+1), no operar nunca (0) y operar siempre con exposición uno.** Las bases nombran las referencias en el entregable 2. "Comprar siempre" y "exposición uno" podrían ser la misma estrategia o distinguirse por el carry o el rebalanceo; **se confirma con el código de evaluación**. |
-| Carry | Proxy propio (FEDL01 rezagada − CHNI1M) | Las bases dicen que la base del kit trae el carry ya calculado y que lo calcula el laboratorio "bajo una regla única". La base que tenemos viene en bruto: **se mantiene el proxy hasta recibir el del kit**. |
+| Carry | Proxy propio (FEDL01 rezagada − CHNI1M); desde el 9 nov 2026, FEDL01 rezagada − TPM (§8.3) | Las bases dicen que la base del kit trae el carry ya calculado y que lo calcula el laboratorio "bajo una regla única". La base que tenemos viene en bruto: **se mantiene un proxy hasta recibir el del kit**. |
 | Fuera de muestra | 2024-10-01 (valor de trabajo) | Lo define el código de evaluación. El jurado además mide el **monitoreo en vivo (13 nov–1 dic)**, que ningún modelo vio. |
 | Criterios | — | Valor económico neto de costos, significancia (DM + bootstrap contra las tres referencias), rigor metodológico y defensa oral. |
 
@@ -242,6 +242,24 @@ Lectura:
 - Los días de acuerdo aciertan algo más, pero **no ganan más por unidad** que los días ±1 y bajan el Sharpe: triplicar la exposición suma más riesgo y rotación que retorno.
 - **La persistencia casi nunca se da:** el percentil de M1 tiene autocorrelación −0,17 (la señal viene de movimientos del día anterior que en parte se revierten).
 - **Pruebas acumuladas:** 4 reglas de ±3 evaluadas en selección; ninguna prueba nueva en validación.
+
+### 8.3 Carry overnight en el modelo congelado (9 nov 2026) [Decidido: cambio declarado]
+
+El proxy de carry pasa de FEDL01 rezagada − CHNI1M (NDF 1M) a **FEDL01 rezagada − TPM (CHOVCHOV)**, diferencial estricto de tasas overnight. No viene del kit, así que se declara como cambio según §8. En `01_panel.py` la regla está en `calcular_carry_diario` (`--carry overnight`, por defecto, o `--carry ndf`), con `USAR_CARRY_OFICIAL_KIT` para cambiar al carry del kit cuando llegue.
+
+- **Qué no cambia:** rasgos, modelo, filas de entrenamiento, probabilidades, posiciones, q elegidos (`seleccion_q`), activación de ±3 y convicción. `senales_desarrollo.csv` sale idéntico. `03_modelos_decision.py` mantiene `x_chni1m` en el filtro de filas para no recortar la muestra (la TPM parte el 2001-08-09; las predicciones, en 2010). La señal del día (§8.1) no usa el carry.
+- **Qué cambia:** solo los resultados en pesos (carry en el resultado).
+
+| Validación 2018 – sep 2024, 2 pb | Carry NDF | Carry overnight |
+|---|---|---|
+| M1·DH q0,20: media anual / Sharpe | 6,92 % / 0,696 | 6,98 % / 0,702 |
+| Comprar siempre (+1): media anual | 3,78 % | 3,42 % |
+| M1·DH − comprar siempre: diferencia / p bootstrap | 3,14 pts / 0,306 | 3,56 pts / 0,281 |
+| M1·DH − no operar: p bootstrap | 0,038 | 0,036 |
+
+- La elección de q en selección se mantiene (M1·DH: Sharpe 1,436 → 1,441 en q = 0,20) y la prueba de ±3 (§8.2) sigue sin reglas que califiquen.
+- **Diferencia relevante en el tramo fuera de muestra:** la TPM (4,5 %) está casi un punto sobre CHNI1M (3,6 %) por la base onshore/offshore, así que con el carry overnight mantener un largo en USD cuesta ~0,7 puntos al año más que con el NDF (referencias de `01_panel.py` desde 2024-10-01: comprar siempre 3,71 % frente a 4,49 % anual con carry).
+- **Pruebas acumuladas:** ninguna nueva; cambia la medición del resultado, no la estrategia.
 
 ## 9. Pendientes (actualizado al cierre de la sesión del 16 oct 2026)
 

@@ -83,7 +83,10 @@ def platt_en_linea(p, y):
 
 
 def predicciones(panel):
+    # mismas filas que el modelo congelado (§8): x_chni1m sigue en el filtro aunque el carry ya no la use;
+    # x_tpm se agrega despues para no recortar la muestra (la TPM parte en 2001-08-09)
     d = panel[NUCLEO + ["up_next", "ret_next", "x_fedl01", "x_chni1m", "dias_next"]].dropna()
+    d["x_tpm"] = panel.loc[d.index, "x_tpm"]
     y = d["up_next"]
     pred = pd.DataFrame(index=d.index)
     pred["M0_frecuencia"] = y.expanding().mean().shift(1).where(d.index >= INICIO_PRED)
@@ -167,7 +170,8 @@ def posiciones(p, diseño, q=None, con_tres=False):
 
 
 def pnl(pos, d, costo):
-    carry = (d["x_fedl01"] - d["x_chni1m"]) / 100 * d["dias_next"] / 360   # proxy: largo en USD paga el diferencial
+    # proxy overnight (metodologia_v2 §8.3): largo en USD gana FEDL01 rezagada y paga la TPM
+    carry = (d["x_fedl01"] - d["x_tpm"]) / 100 * d["dias_next"] / 360
     bruto = pos * (d["ret_next"] + carry)
     costos = costo * pos.diff().abs().fillna(pos.abs())
     return bruto - costos
