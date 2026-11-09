@@ -24,6 +24,7 @@ Predicción de la dirección del USD/CLP del día siguiente y su traducción a u
 | `03_modelos_decision.py` | Modelos, calibración y capa de decisión (etapa 2b) |
 | `04_senal_diaria.py` | Señal del día con el modelo congelado: dirección, probabilidad y posición (entregable 1) |
 | `05_prueba_tres.py` | Prueba de ±3 con señal clara (descartada, metodología §8.2) |
+| `06_prueba_e.py` | Prueba E: ±3 con restricciones de riesgo (registrada antes de correr, metodología §8.4) |
 | `resultados/` | Salidas de los scripts |
 
 ## Uso

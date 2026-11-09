@@ -261,6 +261,24 @@ El proxy de carry pasa de FEDL01 rezagada − CHNI1M (NDF 1M) a **FEDL01 rezagad
 - **Diferencia relevante en el tramo fuera de muestra:** la TPM (4,5 %) está casi un punto sobre CHNI1M (3,6 %) por la base onshore/offshore, así que con el carry overnight mantener un largo en USD cuesta ~0,7 puntos al año más que con el NDF (referencias de `01_panel.py` desde 2024-10-01: comprar siempre 3,71 % frente a 4,49 % anual con carry).
 - **Pruebas acumuladas:** ninguna nueva; cambia la medición del resultado, no la estrategia.
 
+### 8.4 Prueba E: ±3 con restricciones de riesgo (9 nov 2026) [Registrada antes de correr]
+
+Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, los criterios y la decisión se registran en git antes de correr la selección.
+
+- **Por qué otra prueba:** las bases exigen que ±3 esté entre las posiciones posibles en el monitoreo en vivo. D3 (§7) y las reglas A–D (§8.2) mostraron que los días de señal "más clara" no ganan más por unidad, así que E no busca más acierto: **limita el daño** de triplicar la exposición.
+- **Principio:** igual que en §8.2, el ±3 solo amplifica una posición ±1 del modelo congelado en la misma dirección.
+- **Restricciones** (todas, con información hasta el cierre de t):
+  1. **Señal extrema:** percentil de M1 ≥ 0,95 (o ≤ 0,05), la cola del 5 % del resumen técnico.
+  2. **Régimen calmo:** vol. implícita 1M ≤ su mediana de las últimas 252 jornadas.
+  3. **Duración:** como máximo 3 jornadas seguidas en ±3; la cuarta vuelve a ±1.
+  4. **Freno:** si una jornada en ±3 pierde más de 1 % del nominal (retorno + carry), no hay ±3 en las 20 jornadas siguientes.
+  5. **Tope de frecuencia:** como máximo 5 jornadas en ±3 dentro de las últimas 100 decisiones.
+- **Criterios en selección (2012–2017, 2 pb):** *ventaja*, los cuatro de §8.2 (≥ 30 días en ±3, acierto ≥ 3 puntos sobre ±1, mayor resultado por unidad, mayor Sharpe que el congelado); *riesgo*, máximo drawdown no peor que el del congelado y peor día no peor que 1,5 veces el del congelado.
+- **Decisión:** ventaja y riesgo → **aprobada**; solo riesgo → **incluida por cumplimiento de las bases** (se declara así); falla riesgo → solo ±1. Si se adopta, la validación (2018 – sep 2024) se mira una sola vez y solo exige el criterio de riesgo; si lo falla, solo ±1.
+- **Cambio antes de correr la selección, declarado:** la restricción 5 decía primero "si en selección hay ±3 en más del 5 % de las jornadas, la regla no se acepta". Se cambió a un tope duro porque esa versión podía dejar al ±3 fuera de las posiciones posibles. El cambio se hizo **después de ver** que en 2010–2011 (antes de selección, al revisar la mecánica) la regla daba ±3 en el 5,1 % de las jornadas; con el tope, 3,3 %. No se miró ningún resultado de 2012 en adelante.
+- **Advertencias:** la validación no es una muestra virgen (ya se miró en la etapa 2b). Con ~13 jornadas de monitoreo, un solo día en ±3 puede dominar el resultado en vivo.
+- **Pruebas acumuladas:** sería la 5.ª regla de ±3 evaluada en selección (4 en §8.2 + E).
+
 ## 9. Pendientes (actualizado al cierre de la sesión del 16 oct 2026)
 
 **Hecho en la sesión del 16 oct 2026**
