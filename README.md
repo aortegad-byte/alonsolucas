@@ -7,7 +7,7 @@ Predicción de la dirección del USD/CLP del día siguiente y su traducción a u
 - Núcleo de variables congelado (13 series, cobre HG1).
 - Modelo congelado: logística Ridge calibrada con Platt y banda con histéresis, solo ±1.
 - Señal del día automatizada (`04_senal_diaria.py`).
-- ±3 probado con reglas fijadas de antemano y descartado (metodología §8.2).
+- ±3 probado con reglas fijadas de antemano y descartado (metodología §8.2), y de nuevo con restricciones de riesgo estrictas (prueba E, §8.4): rechazado. **Pendiente urgente:** aclarar con la mentoría el requisito de las bases de que ±3 esté entre las posiciones posibles en el monitoreo (§9).
 - Carry proxy overnight (FEDL01 rezagada − TPM) en lugar del NDF 1M, declarado en metodología §8.3; no cambia señales ni posiciones.
 - El tramo fuera de muestra (desde 2024-10-01) todavía no se ha evaluado.
 - La especificación y todas las decisiones están en [`metodologia_v2.md`](metodologia_v2.md). **Los pendientes para la próxima sesión están en su §9.**

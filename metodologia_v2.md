@@ -294,7 +294,13 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 - **Lectura:** con restricciones de riesgo, los días de señal extrema aciertan *menos* que los ±1 y pierden por unidad. Junto con D3 y A–D, es la quinta vez que el ±3 no paga en este modelo: la cola extrema de M1 no concentra la señal.
 - **Pendiente con las bases:** las bases exigen que ±3 esté entre las posiciones posibles en el monitoreo. Con este resultado, el modelo congelado no emite ±3. Hay que aclarar con la mentoría qué significa "dentro de las posibilidades" antes del 13 nov; no se abre una prueba nueva sin esa respuesta.
 
-## 9. Pendientes (actualizado al cierre de la sesión del 16 oct 2026)
+## 9. Pendientes (actualizado al cierre de la sesión del 9 nov 2026)
+
+**Hecho en la sesión del 9 nov 2026**
+- Base actualizada (`base_usdclp_actualizada.xlsx`, datos hasta el 2026-11-06): mismas 77 columnas e historia idéntica a la anterior; solo agrega 31 jornadas. Pasa a ser la base por defecto de los scripts.
+- Señal al cierre del 6 nov 2026: baja, probabilidad calibrada 0,495, posición 0 (cierra el +1 del día anterior).
+- Carry overnight FEDL01 rezagada − TPM en `01_panel.py` y en el modelo congelado (§8.3): no cambia señales ni posiciones.
+- Prueba E de ±3 con restricciones de riesgo (§8.4): rechazada por ventaja y por riesgo; se mantiene ±1.
 
 **Hecho en la sesión del 16 oct 2026**
 - `01_panel.py` en el repo, con prueba de lunes (§3.3): `prueba_lunes_ok` exige que tanto las jornadas como las jornadas con retorno sean lunes en 17–23 %. Da 20,1 % en las tres variantes; si el retorno se calcula sobre el calendario continuo, los lunes con retorno caen a 0 % y la prueba falla. Nota: `01_panel.py` todavía usa el cobre LME (LMCADS03); los scripts 02 a 05 arman su propio panel con HG1, así que no afecta al modelo congelado.
@@ -305,6 +311,8 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 **Decisiones abiertas**
 1. **Dirección que reporta la señal del día.** Hoy sale de la probabilidad calibrada (> 0,5 = alza), mientras que la posición sale del percentil, y pueden contradecirse (ejemplo: probabilidad 0,49 con posición +1). Alternativa: reportar como dirección el signo de la posición y "sin señal" cuando es 0.
 2. **Alinear `01_panel.py` con HG1**, o declararlo solo como panel de la etapa 1.
+3. **±3 en el monitoreo (urgente, antes del 13 nov).** Las bases exigen que ±3 esté entre las posiciones posibles, y el modelo congelado no lo emite tras la prueba E (§8.4). Según lo que responda la mentoría: (a) si basta con que la regla pueda emitir ±3, incluir la regla E por cumplimiento, declarando que en desarrollo no pagó; (b) si ±3 debe usarse efectivamente, lo mismo, con el resultado de §8.4 a la vista. No abrir una 6.ª regla elegida después de ver E. Si se incluye, hay que llevar la regla E a `04_senal_diaria.py`.
+4. **`resultados/senal_del_dia.json`:** agregarlo al `.gitignore` o versionarlo para tener el historial de señales del monitoreo.
 
 **Trabajo siguiente**
 - **Lectura de la convicción (entregable 3):** jornadas de máxima exposición y de abstención.
@@ -314,10 +322,15 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 
 **Depende del kit o de la mentoría**
 - Respuestas de la mentoría (§10 del resumen): retorno, carry, costos, período fuera de muestra, datos en vivo, rezagos de publicación.
+- **Qué significa que ±3 esté "dentro de las posibilidades"** en el monitoreo (decisión abierta 3). Enviar con los números de §8.4.
+- **Carry del kit:** confirmar sus unidades (% anual o resultado diario) antes de activar `USAR_CARRY_OFICIAL_KIT`, porque `pnl` divide por 100 y multiplica por días/360.
+- **Texto de las bases:** `Bases.pdf` es un escaneo sin texto; conseguir una versión con texto o transcribir la parte de exposición y ±3.
+- **Horarios de cierre:** confirmar si el `PX_LAST` del USD/CLP se fija antes que los cierres de Nueva York (VIX, DXY, UST2Y); si es así, esas series deberían rezagarse un día (riesgo de look-ahead que la prueba de truncamiento no detecta).
 - **Costo de transacción del kit:** es lo que hoy decide qué estrategia elegir (§7).
 - Evaluar **una sola vez** en el tramo fuera de muestra (desde 2024-10-01), después de conocer costo y carry.
 
 **Para retomar el entorno**
+- Clon local de trabajo: `Documents\alonsolucas`, con `.venv` ya creado y la base copiada en la raíz.
 - Crear el entorno: `python -m venv .venv` y `.venv\Scripts\pip install -r requirements.txt`.
 - Copiar `base_usdclp_actualizada.xlsx` a la raíz (no se publica).
 - Las salidas de prueba conviene generarlas fuera del repo, porque los scripts escriben en `resultados/` del directorio actual.
