@@ -11,5 +11,8 @@ data/
 Bases.pdf
 Explorando-los-*.pdf
 
+# señal del día: se sobrescribe en cada corrida; el historial queda en resultados/historial_senales.csv
+resultados/senal_del_dia.json
+
 # plantilla de PyCharm
 main.py

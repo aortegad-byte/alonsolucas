@@ -16,10 +16,16 @@ predicciones; las probabilidades calibrada y cruda se informan aparte, sin decid
 Uso:
   python 04_senal_diaria.py "base_usdclp_actualizada.xlsx"
   python 04_senal_diaria.py "base_usdclp_actualizada.xlsx" --hasta 2024-09-27   # como si la base terminara ese día
+
+Cada corrida sobrescribe resultados/senal_del_dia.json y agrega la señal a resultados/historial_senales.csv
+(una fila por fecha_decision: correr dos veces la misma fecha reemplaza la fila). Con --hasta no se toca
+ninguno de los dos: la señal va a resultados/senal_hasta_AAAA-MM-DD.json, para que una reproducción
+nunca reemplace la señal vigente ni se mezcle con el monitoreo.
 """
 import argparse
 import importlib
 import json
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -29,6 +35,8 @@ etapa2b = importlib.import_module("03_modelos_decision")
 NUCLEO = etapa2b.NUCLEO
 Q_HISTERESIS = 0.20                 # metodologia_v2 §8
 DIAS_MOSTRAR = 10
+HISTORIAL = ["fecha_decision", "direccion", "posicion", "posicion_anterior", "prob_alza_calibrada",
+             "prob_alza_cruda", "percentil_63", "modelo", "fecha_ejecucion"]
 
 
 def preparar_datos(xlsx, hasta=None):
@@ -68,6 +76,15 @@ def senal_del_dia(pred):
             "modelo": f"M1_ridge|DH_histeresis_q{Q_HISTERESIS} (metodologia_v2 §8)"}
 
 
+def registrar_historial(senal, ruta):
+    """Agrega la señal a ruta; si ya hay una fila con la misma fecha_decision, la reemplaza."""
+    fila = pd.DataFrame([{**senal, "fecha_ejecucion": date.today().isoformat()}])[HISTORIAL].astype(str)
+    if ruta.exists():
+        previo = pd.read_csv(ruta, dtype=str, keep_default_na=False)
+        fila = pd.concat([previo[previo["fecha_decision"] != senal["fecha_decision"]], fila])
+    fila.sort_values("fecha_decision").to_csv(ruta, index=False, encoding="utf-8")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Señal del día del modelo congelado")
     ap.add_argument("xlsx", nargs="?", default="base_usdclp_actualizada.xlsx")
@@ -79,7 +96,14 @@ def main():
 
     salida = Path("resultados")
     salida.mkdir(exist_ok=True)
-    (salida / "senal_del_dia.json").write_text(json.dumps(senal, indent=2, ensure_ascii=False), encoding="utf-8")
+    if a.hasta:
+        destino = salida / f"senal_hasta_{pd.Timestamp(a.hasta).date()}.json"
+        print(f"AVISO: con --hasta no se actualizó senal_del_dia.json ni historial_senales.csv; "
+              f"la señal se guardó en {destino}.\n")
+    else:
+        destino = salida / "senal_del_dia.json"
+        registrar_historial(senal, salida / "historial_senales.csv")
+    destino.write_text(json.dumps(senal, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps(senal, indent=2, ensure_ascii=False))
     print(f"\nÚltimas {DIAS_MOSTRAR} jornadas:")
     print(pred.tail(DIAS_MOSTRAR).round(4).to_string())

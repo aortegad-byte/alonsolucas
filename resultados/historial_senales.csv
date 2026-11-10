@@ -1,0 +1,2 @@
+fecha_decision,direccion,posicion,posicion_anterior,prob_alza_calibrada,prob_alza_cruda,percentil_63,modelo,fecha_ejecucion
+2026-11-06,abstención,0,1,0.495,0.4791,0.2222,M1_ridge|DH_histeresis_q0.2 (metodologia_v2 §8),2026-11-10
