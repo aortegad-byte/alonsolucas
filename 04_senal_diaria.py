@@ -9,9 +9,9 @@ La decisión se toma al cierre de la última jornada de la base y se aplica al r
 USD/CLP de esa jornada a la siguiente. El script no calcula retornos ni resultados: no evalúa
 nada, así que tampoco mira el tramo fuera de muestra.
 
-Dirección y posición pueden no coincidir. La dirección sale de la probabilidad calibrada
-(> 0,5 = alza); la posición, del percentil de la probabilidad cruda entre las últimas 63
-predicciones. Una probabilidad de 0,49 puede ser alta comparada con las semanas anteriores.
+La dirección sale de la posición (+1 = alza, −1 = baja, 0 = abstención), así que nunca contradice
+la exposición. La posición viene del percentil de la probabilidad cruda entre las últimas 63
+predicciones; las probabilidades calibrada y cruda se informan aparte, sin decidir la dirección.
 
 Uso:
   python 04_senal_diaria.py "base_usdclp_actualizada.xlsx"
@@ -52,11 +52,14 @@ def predecir(d):
     return pred
 
 
+DIRECCION = {1: "alza", -1: "baja", 0: "abstención"}
+
+
 def senal_del_dia(pred):
     fecha, ultima = pred.index[-1], pred.iloc[-1]
     return {"fecha_decision": str(fecha.date()),
             "aplica_a": "retorno del USD/CLP desde el cierre de fecha_decision hasta la próxima jornada",
-            "direccion": "alza" if ultima["p_calibrada"] > 0.5 else "baja",
+            "direccion": DIRECCION[int(ultima["posicion"])],
             "prob_alza_calibrada": round(float(ultima["p_calibrada"]), 4),
             "prob_alza_cruda": round(float(ultima["p_cruda"]), 4),
             "percentil_63": round(float(ultima["percentil_63"]), 4),

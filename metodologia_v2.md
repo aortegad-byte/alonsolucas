@@ -215,9 +215,9 @@ Desde aquí no se cambian ni las variables, ni el modelo, ni la regla de exposic
 
 ### 8.1 Señal del día (16 oct 2026) [Implementado]
 
-Script: `04_senal_diaria.py`. Aplica el modelo de §8 con las mismas funciones de `03_modelos_decision.py` y entrega, para la última jornada de la base: dirección (probabilidad calibrada > 0,5 = alza), probabilidad calibrada y cruda, percentil de 63 predicciones y posición. No calcula retornos, así que no evalúa el tramo fuera de muestra.
+Script: `04_senal_diaria.py`. Aplica el modelo de §8 con las mismas funciones de `03_modelos_decision.py` y entrega, para la última jornada de la base: dirección, probabilidad calibrada y cruda, percentil de 63 predicciones y posición. No calcula retornos, así que no evalúa el tramo fuera de muestra.
 
-- **Dirección y posición pueden diferir:** la dirección usa la probabilidad calibrada; la posición, su percentil frente a las últimas 63 predicciones.
+- **Dirección (cambio de reporte del 9 nov 2026):** sale del signo de la posición: +1 = alza, −1 = baja, 0 = abstención. Las probabilidades calibrada y cruda se informan como contexto, no como decisión. Antes la dirección salía de la probabilidad calibrada (> 0,5 = alza) y podía contradecir a la posición. Es un cambio solo de reporte: el modelo y las posiciones no cambian.
 - **Verificación:** en las 5.949 jornadas de desarrollo reproduce exactamente `M1_ridge|DH_histeresis_q0.2` de `senales_desarrollo.csv`. Truncando la base en cinco fechas (2012–2026), la señal de cada fecha es idéntica a la calculada con la base completa (sin look-ahead).
 - **Si una serie del núcleo no tiene dato** dentro del relleno de 5 días, el script se detiene en vez de emitir una señal con datos rancios.
 - Para extender el panel hasta la última jornada, `construir_panel` de `02_seleccion_variables.py` recibe ahora `fin` y `hasta` opcionales; con los valores por defecto el resultado de 02 y 03 no cambia.
@@ -309,7 +309,7 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 - Prueba de ±3 con señal clara (§8.2, `05_prueba_tres.py`): descartada, se mantiene ±1.
 
 **Decisiones abiertas**
-1. **Dirección que reporta la señal del día.** Hoy sale de la probabilidad calibrada (> 0,5 = alza), mientras que la posición sale del percentil, y pueden contradecirse (ejemplo: probabilidad 0,49 con posición +1). Alternativa: reportar como dirección el signo de la posición y "sin señal" cuando es 0.
+1. **Dirección que reporta la señal del día.** [Resuelta el 9 nov 2026] La dirección es el signo de la posición (+1 alza, −1 baja) y "abstención" cuando es 0 (§8.1). La probabilidad queda como contexto. El modelo y las posiciones no cambian.
 2. **Alinear `01_panel.py` con HG1**, o declararlo solo como panel de la etapa 1.
 3. **±3 en el monitoreo (urgente, antes del 13 nov).** Las bases exigen que ±3 esté entre las posiciones posibles, y el modelo congelado no lo emite tras la prueba E (§8.4). Según lo que responda la mentoría: (a) si basta con que la regla pueda emitir ±3, incluir la regla E por cumplimiento, declarando que en desarrollo no pagó; (b) si ±3 debe usarse efectivamente, lo mismo, con el resultado de §8.4 a la vista. No abrir una 6.ª regla elegida después de ver E. Si se incluye, hay que llevar la regla E a `04_senal_diaria.py`.
 4. **`resultados/senal_del_dia.json`:** agregarlo al `.gitignore` o versionarlo para tener el historial de señales del monitoreo.
