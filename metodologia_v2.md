@@ -292,7 +292,7 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 
 - **Falla en ventaja y en riesgo** → solo ±1; la validación no se miró. El tope cortó 21 candidatos y el freno, 27.
 - **Lectura:** con restricciones de riesgo, los días de señal extrema aciertan *menos* que los ±1 y pierden por unidad. Junto con D3 y A–D, es la quinta vez que el ±3 no paga en este modelo: la cola extrema de M1 no concentra la señal.
-- **Pendiente con las bases:** las bases exigen que ±3 esté entre las posiciones posibles en el monitoreo. Con este resultado, el modelo congelado no emite ±3. Hay que aclarar con la mentoría qué significa "dentro de las posibilidades" antes del 13 nov; no se abre una prueba nueva sin esa respuesta.
+- **Pendiente con las bases:** las bases exigen que ±3 esté entre las posiciones posibles en el monitoreo. Con este resultado, el modelo congelado no emite ±3. La mentoría respondió el 10 nov 2026, de forma verbal, que ±3 no es lo más importante (§9, decisión abierta 3, cerrada); no se abre una prueba nueva.
 
 ## 9. Pendientes (actualizado al cierre de la sesión del 9 nov 2026)
 
@@ -312,6 +312,7 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 1. **Dirección que reporta la señal del día.** [Resuelta el 9 nov 2026] La dirección es el signo de la posición (+1 alza, −1 baja) y "abstención" cuando es 0 (§8.1). La probabilidad queda como contexto. El modelo y las posiciones no cambian.
 2. **Alinear `01_panel.py` con HG1**, o declararlo solo como panel de la etapa 1.
 3. **±3 en el monitoreo (urgente, antes del 13 nov).** Las bases exigen que ±3 esté entre las posiciones posibles, y el modelo congelado no lo emite tras la prueba E (§8.4). Según lo que responda la mentoría: (a) si basta con que la regla pueda emitir ±3, incluir la regla E por cumplimiento, declarando que en desarrollo no pagó; (b) si ±3 debe usarse efectivamente, lo mismo, con el resultado de §8.4 a la vista. No abrir una 6.ª regla elegida después de ver E. Si se incluye, hay que llevar la regla E a `04_senal_diaria.py`.
+   **[Cerrada el 10 nov 2026]** La mentoría respondió el 10 nov 2026, de forma verbal y no escrita, que ±3 no es lo más importante: lo que importa es que el valor neto después de costos sea positivo y que las señales sean buenas. Se deja la regla E sin incluir por ahora; el modelo congelado sigue en ±1. Si se obtiene la respuesta por escrito, se anota aquí.
 4. **`resultados/senal_del_dia.json`:** agregarlo al `.gitignore` o versionarlo para tener el historial de señales del monitoreo.
 
 **Trabajo siguiente**
@@ -322,7 +323,7 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 
 **Depende del kit o de la mentoría**
 - Respuestas de la mentoría (§10 del resumen): retorno, carry, costos, período fuera de muestra, datos en vivo, rezagos de publicación.
-- **Qué significa que ±3 esté "dentro de las posibilidades"** en el monitoreo (decisión abierta 3). Enviar con los números de §8.4.
+- **±3 en el monitoreo:** decisión abierta 3 cerrada el 10 nov 2026 con respuesta verbal de la mentoría. Falta la respuesta por escrito; si llega, se anota en esa decisión.
 - **Carry del kit:** confirmar sus unidades (% anual o resultado diario) antes de activar `USAR_CARRY_OFICIAL_KIT`, porque `pnl` divide por 100 y multiplica por días/360.
 - **Texto de las bases:** `Bases.pdf` es un escaneo sin texto; conseguir una versión con texto o transcribir la parte de exposición y ±3.
 - **Horarios de cierre:** confirmar si el `PX_LAST` del USD/CLP se fija antes que los cierres de Nueva York (VIX, DXY, UST2Y); si es así, esas series deberían rezagarse un día (riesgo de look-ahead que la prueba de truncamiento no detecta).
