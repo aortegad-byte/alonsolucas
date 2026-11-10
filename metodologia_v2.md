@@ -294,7 +294,12 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 - **Lectura:** con restricciones de riesgo, los días de señal extrema aciertan *menos* que los ±1 y pierden por unidad. Junto con D3 y A–D, es la quinta vez que el ±3 no paga en este modelo: la cola extrema de M1 no concentra la señal.
 - **Pendiente con las bases:** las bases exigen que ±3 esté entre las posiciones posibles en el monitoreo. Con este resultado, el modelo congelado no emite ±3. La mentoría respondió el 10 nov 2026, de forma verbal, que ±3 no es lo más importante (§9, decisión abierta 3, cerrada); no se abre una prueba nueva.
 
-## 9. Pendientes (actualizado al cierre de la sesión del 9 nov 2026)
+## 9. Pendientes (actualizado al cierre de la sesión del 10 nov 2026)
+
+**Hecho en la sesión del 10 nov 2026**
+- Dirección de la señal del día según el signo de la posición, con "abstención" cuando es 0 (§8.1); decisión abierta 1 resuelta.
+- Decisión abierta 3 (±3 en el monitoreo) cerrada con la respuesta verbal de la mentoría; pendiente la respuesta por escrito.
+- Lectura de la convicción y del riesgo del modelo congelado, descriptiva, sobre el tramo de desarrollo (§9.1, `07_conviccion_diaria.py`). No es una prueba nueva y no cambia el modelo.
 
 **Hecho en la sesión del 9 nov 2026**
 - Base actualizada (`base_usdclp_actualizada.xlsx`, datos hasta el 2026-11-06): mismas 77 columnas e historia idéntica a la anterior; solo agrega 31 jornadas. Pasa a ser la base por defecto de los scripts.
@@ -316,7 +321,7 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 4. **`resultados/senal_del_dia.json`:** agregarlo al `.gitignore` o versionarlo para tener el historial de señales del monitoreo.
 
 **Trabajo siguiente**
-- **Lectura de la convicción (entregable 3):** jornadas de máxima exposición y de abstención.
+- **Lectura de la convicción (entregable 3):** hecha de forma descriptiva sobre el tramo de desarrollo (§9.1). Falta la lectura de las jornadas de máxima exposición y de abstención con la convicción en vivo.
 - **Curva de resultado (entregable 2)** frente a comprar siempre, no operar nunca y operar siempre con exposición uno; espera el código de evaluación del kit.
 - **Reducir la rotación** sin abrir muchas pruebas nuevas (hoy ~149 veces el nominal al año con M1·DH).
 - **Monitoreo en vivo (13 nov–1 dic):** usar `04_senal_diaria.py` con la base actualizada cada día; definir cómo llegan los datos nuevos.
@@ -335,3 +340,71 @@ Script: `06_prueba_e.py`; resultados en `resultados/prueba_e.xlsx`. Las reglas, 
 - Crear el entorno: `python -m venv .venv` y `.venv\Scripts\pip install -r requirements.txt`.
 - Copiar `base_usdclp_actualizada.xlsx` a la raíz (no se publica).
 - Las salidas de prueba conviene generarlas fuera del repo, porque los scripts escriben en `resultados/` del directorio actual.
+
+### 9.1 Lectura de la convicción y del riesgo (10 nov 2026) [Descriptiva: sin cambios al modelo]
+
+Análisis del modelo congelado `M1_ridge|DH_histeresis_q0.2` sobre el tramo de desarrollo, 2010-04-01 a 2024-09-27 (3.504 jornadas, desde que hay 63 predicciones para el percentil). No es una prueba nueva, no abre reglas y no mira el tramo fuera de muestra. Script: `07_conviccion_diaria.py "base_usdclp_actualizada.xlsx"`. El resultado se mide con la función `pnl` de `03_modelos_decision.py`, con el carry overnight de §8.3 y 2 pb por unidad de cambio de posición; el costo de salir a 0 se imputa al último día con posición activa. Los intervalos son bootstrap estacionario de bloque medio 10, el de `03_modelos_decision.py`.
+
+**Acierto y resultado por tramo de percentil** (jornadas con posición ≠ 0; `resultados/conviccion_tramos.csv`)
+
+| Percentil de 63 predicciones | Días con posición | Acierto | Neto (pb por jornada) | IC 95 % del neto |
+|---|---|---|---|---|
+| 0 – 0,10 | 342 | 0,584 | 9,4 | 2,7 a 16,2 |
+| 0,10 – 0,20 | 319 | 0,564 | 6,6 | −2,2 a 14,5 |
+| 0,20 – 0,50 | 245 | 0,469 | 1,8 | −8,0 a 11,6 |
+| 0,50 – 0,80 | 246 | 0,508 | 5,0 | −3,2 a 13,2 |
+| 0,80 – 0,90 | 369 | 0,567 | 8,8 | 2,1 a 15,8 |
+| 0,90 – 1,00 | 387 | 0,559 | 9,3 | 1,4 a 18,0 |
+
+- El neto es positivo en los seis tramos. El IC 95 % excluye cero en los tramos 0–0,10, 0,80–0,90 y 0,90–1,00.
+- En los tramos 0,20–0,80 la posición viene de la histéresis (se mantiene hasta que el percentil cruza 0,50) y el acierto va de 0,469 a 0,508.
+- Dentro de la zona extrema el acierto no sube con la convicción: 0,584 y 0,564 en la cola baja; 0,567 y 0,559 en la alta.
+
+**Total sobre las 3.504 jornadas, con carry y 2 pb** (`conviccion_valor_total.csv`, `conviccion_riesgo.csv`)
+
+| Estrategia | Total (pb) | Por jornada (pb) | IC 95 % |
+|---|---|---|---|
+| Modelo | 13.860 | 3,96 | 1,90 a 6,06 |
+| Comprar siempre (+1) | 936 | 0,27 | −2,18 a 2,78 |
+| Vender siempre (−1) | −940 | −0,27 | no calculado |
+| No operar | 0 | 0 | — |
+
+El modelo menos comprar siempre suma 12.923 pb (3,69 pb por jornada, IC 95 % de 0,44 a 6,81).
+
+**Descomposición señal y carry** (`conviccion_descomposicion.csv`)
+- Sin carry, el modelo suma 13.885 pb y comprar siempre 5.242 pb: el modelo la supera por unos 8.640 pb.
+- El carry aporta −25 pb al modelo y −4.306 pb a comprar siempre.
+- Posiciones del modelo: +1 en 28,6 % de las jornadas, 0 en 45,6 % y −1 en 25,9 %; la posición neta promedio es +0,027. La ganancia viene de la dirección y no del carry.
+- Seguir el carry (−1 si TPM > FEDL01 rezagada, +1 en caso contrario) queda en −1 el 99,4 % de las jornadas: es casi vender siempre (−998 pb con carry, −5.306 pb sin carry). El modelo lo supera por 4,24 pb por jornada con carry (IC 95 % de 0,90 a 7,58) y por 5,48 sin carry (IC 95 % de 2,19 a 8,92).
+
+**Subperíodos** (`conviccion_subperiodos.csv`)
+
+| Subperíodo | Jornadas | Modelo, pb por jornada |
+|---|---|---|
+| 2010-04-01 a 2017-12-31 | 1.790 | 5,09 |
+| 2018-01-01 a 2024-09-27 | 1.714 | 2,77 |
+
+El segundo subperíodo coincide con la validación de §8.3: 2,77 × 252 = 698 pb, que son los 6,98 % de media anual del carry overnight.
+
+**Riesgo** (`conviccion_riesgo.csv`)
+
+| Métrica | Modelo | Comprar siempre | Vender siempre |
+|---|---|---|---|
+| Drawdown máximo (pb) | −1.516 | −3.518 | −5.805 |
+| Período del drawdown | 2022-08-30 a 2023-05-26 | 2022-07-13 a 2023-06-07 | 2013-04-08 a 2022-07-13 |
+| Rotación anual (veces el nocional) | 148 | 0,07 | 0,07 |
+| Costo de equilibrio (pb por unidad de cambio) | 8,46 | 938 | sin equilibrio |
+
+El costo de equilibrio del modelo es el costo con el que su total neto se hace cero: 18.150 pb de resultado bruto divididos entre 2.145 cambios de posición. Es mayor que los 2 pb del análisis y que los 5 pb que §7 usa como tercer escenario de costos.
+
+**Días de cola** (los dos retornos más extremos de la revisión de datos; los precios son observados, sin relleno)
+- **2011-01-03, retorno de +4,58 % hasta el 4 de enero.** El Banco Central anunció el lunes 3 de enero de 2011 un programa de compra de divisas para acumular US$ 12.000 millones en reservas durante 2011, con compras desde el 5 de enero. La nota, publicada a las 18:17 horas, informa que el dólar cerró ese día en su nivel más bajo en 31 meses (465,90 comprador y 466,40 vendedor). El modelo estaba en −1 (percentil 0,222) y perdió 457 pb, la peor jornada de su historia en el tramo. Fuente: [Cooperativa, 3 ene 2011](https://cooperativa.cl/banco-central-intervendra-el-dolar-con-programa-de-compra-de-divisas/prontus_nots/2011-01-03/182107.html).
+- **2022-07-14, retorno de −7,37 % hasta el 15 de julio.** El Banco Central anunció el jueves 14 de julio de 2022 un programa de intervención cambiaria y provisión preventiva de liquidez en dólares por hasta US$ 25.000 millones, entre el 18 de julio y el 30 de septiembre de 2022: hasta US$ 10.000 millones en venta de dólares spot, hasta US$ 10.000 millones en instrumentos de cobertura cambiaria y hasta US$ 5.000 millones en swap de divisas. La nota de prensa se publicó a las 21:52 horas. El modelo estaba en posición 0 ese día, así que no ganó ni perdió; comprar siempre perdió 739 pb, su peor jornada. Fuentes: [comunicado del Banco Central](https://www.bcentral.cl/contenido/-/details/comunicado-14072022) y [Cooperativa, 14 jul 2022](https://www.cooperativa.cl/noticias/site/artic/20220714/pags-amp/20220714213947.html).
+- Son riesgos de cola por decisiones de política monetaria que el modelo no anticipa. No se excluyen de ningún resultado de esta sección.
+
+**Reservas**
+- **Los tramos no son independientes:** una misma posición abierta aparece en varios tramos, porque el percentil cambia de un día a otro mientras la posición se mantiene. Los IC por tramo no deben sumarse ni compararse como muestras separadas.
+- **Cota superior:** q = 0,20 se eligió con datos que se solapan con este período. Las cifras sobrestiman lo esperable fuera de muestra.
+- **Pendientes del kit:** los resultados no usan el costo de transacción de la base del kit ni su regla de carry (`USAR_CARRY_OFICIAL_KIT` sigue pendiente).
+- **Mismo período:** la rotación y el costo de equilibrio salen del mismo período de desarrollo.
+- **Tramo fuera de muestra:** sigue sin evaluarse (desde 2024-10-01).

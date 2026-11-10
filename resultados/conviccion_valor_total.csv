@@ -1,0 +1,5 @@
+estrategia,jornadas,total_pb,media_por_jornada_pb,ic95_lo,ic95_hi
+modelo,3504,13859.5179,3.9553,1.8961,6.0597
+comprar_siempre,3504,936.3739,0.2672,-2.179,2.7782
+no_operar,3504,0.0,0.0,0.0,0.0
+modelo_menos_siempre,3504,12923.144,3.6881,0.4381,6.8052

@@ -1,0 +1,7 @@
+estrategia,pct_mas1,pct_cero,pct_menos1,total_con_carry_pb,total_sin_carry_pb,carry_pb,media_con_carry_pb,media_sin_carry_pb
+modelo,0.286,0.4555,0.2586,13859.5179,13884.629,-25.1111,3.9553,3.9625
+comprar_siempre,1.0,0.0,0.0,936.3739,5242.1072,-4305.7333,0.2672,1.496
+vender_siempre,0.0,0.0,1.0,-940.3739,-5246.1072,4305.7333,-0.2684,-1.4972
+no_operar,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+seguir_carry,0.006,0.0,0.994,-997.8965,-5305.5854,4307.6889,-0.2848,-1.5142
+exposicion_uno,1.0,0.0,0.0,936.3739,5242.1072,-4305.7333,0.2672,1.496
