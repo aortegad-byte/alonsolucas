@@ -39,7 +39,7 @@ Reservas (detalle en la sección 7 del notebook): el costo de 2 pb y el carry (F
 - **Qué se opera y a qué precio:** la posición decidida en *t* se mantiene de *t* a *t*+1 y gana el retorno cierre a cierre del USD/CLP (`PX_LAST`). No se usa apertura ni el dólar observado como precio de ejecución.
 - **Qué gatilla una operación:** un cambio del percentil de la probabilidad según la regla DH de arriba. El costo se cobra por cada unidad de cambio de posición; el de salir a 0 se imputa al último día con posición activa.
 - **Lunes y feriados:** los retornos se calculan sobre la secuencia de jornadas (el retorno del lunes cubre el fin de semana), con una prueba automática en `01_panel.py`.
-- **Pendiente de confirmar** (declarado en el notebook y en la metodología §9): si el cierre del USD/CLP se fija antes que los cierres de Nueva York (VIX, DXY, UST2Y). Si hay sesgo de horario, esas series se rezagarían un día y el modelo se reentrenaría declarando el cambio.
+- **Supuesto del torneo sobre los horarios:** el diccionario de datos de los organizadores indica asumir que el modelo corre al cierre de cada sesión, con todos los cierres de una misma fecha disponibles, y usarlos tal como vienen; se sigue esa regla. **Salvedad** (metodología §9): VIX, DXY y UST2Y cierran en Nueva York, normalmente después de la fijación del USD/CLP; si en la práctica el USD/CLP se fija antes, las cifras serían algo optimistas y esas series se rezagarían un día, reentrenando con el cambio declarado.
 - **Monitoreo en vivo:** `04_senal_diaria.py` entrega la señal al cierre de la última jornada de la base (dirección según el signo de la posición, "abstención" si es 0, probabilidad calibrada y percentil).
 
 ## Cómo ejecutar
